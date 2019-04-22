@@ -1,22 +1,24 @@
-import h5py
+import pydicom
 import os
 import numpy as np
-from matplotlib import pyplot as plt
 from skimage.morphology import disk, binary_dilation 
-import scipy
-from cyvlfeat.gmm import gmm
 from cyvlfeat.fisher import fisher
 from sklearn.linear_model import LogisticRegression
+from numba import cuda
+import pickle
+
 
 class Classifier:
-    def __init__(self, fileName, rawDataPath, maskDataPath):
+    def __init__(self, fileData, rawDataPath, maskDataPath):
         self.PATH = '/home/faqih/ITB/TA/Web/server/static/classificationModel'
         self.patSize = 7
-        self.filePath = (rawDataPath + '/' + fileName)
+        self.fileName = fileData['fileName']
+        self.filePath = (rawDataPath + '/' + fileData['fileName'])
+        self.patientID = fileData['patientID']
         self.nRegion = 8
         self.dictSize = 64
         self.compIndex = 8
-        self.tumorMaskPath = np.load(os.path.join(maskDataPath, fileName.split('.',1)[0]+'.npz'))['mask']
+        self.tumorMaskPath = np.load(os.path.join(maskDataPath, self.fileName.split('.',1)[0]+'.npz'))['mask']
         self.index = (np.load(os.path.join(self.PATH ,'cvIndex.npz')))['cvind']
         self.label = (np.load(os.path.join(self.PATH, 'label.npz')))['label']
         self.trainInd = np.uint16(np.where(self.index!=(1))[1])
@@ -63,15 +65,8 @@ class Classifier:
     def _featuresExtraction(self):
         testFeaMat = np.empty(((self.compIndex) * 2 * self.dictSize * self.nRegion, 0), dtype='float32')
         temp = []
-        arrays = {}
-        arr = {}
         normImage = np.empty([2,2])
-        f = h5py.File(self.filePath, 'r')
-        for k, v in f.items() : 
-            arrays[k] = np.array(v)
-            for i, j in v.items() : 
-                arr[i] = np.array(j)
-        image = arr['image']
+        image = pydicom.filereader.dcmread(self.filePath).pixel_array
         mask = self.tumorMaskPath   
         normImage = self._norm(image)
         se = disk(2)
@@ -88,17 +83,23 @@ class Classifier:
 
     def classify(self):
         testFeaMat = self._featuresExtraction()
-        logreg = LogisticRegression(C=1e5, solver='lbfgs', multi_class='multinomial')
-        logreg.fit(self.trainFeaMat.T, np.ravel(self.trainLabel))
+        logreg = pickle.load(open('static/classificationModel/logregModel', 'rb'))
         prediction = logreg.predict(testFeaMat.T)
-        return int(prediction)
+        if(prediction==1):
+            result = "Meningioma"
+        elif(prediction==2):
+            result = "Glioma"
+        elif(prediction==3):
+            result = "Pituitary"
+        return result, self.patientID, self.fileName
 
 if __name__ == '__main__':
-    fileName = '1.mat'
+    fileData = '1.dcm'
     rawDataPath = '/home/faqih/ITB/TA/Web/server/static/rawData'
     maskDataPath = '/home/faqih/ITB/TA/Web/server/static/maskData'
-    classifier = Classifier(fileName, rawDataPath, maskDataPath)
-    prediction = classifier.classify()
+    classifier = Classifier(fileData, rawDataPath, maskDataPath)
+    prediction, patientID = classifier.classify()
     print(prediction)
+
 
 

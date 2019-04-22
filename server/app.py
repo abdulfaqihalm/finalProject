@@ -14,7 +14,7 @@ from werkzeug.utils import secure_filename
 
 RAW_DATA_FOLDER = '/home/faqih/ITB/TA/Web/server/static/rawData'
 MASK_DATA_FOLDER = '/home/faqih/ITB/TA/Web/server/static/maskData'
-ALLOWED_EXTENSIONS = set(['mat'])
+ALLOWED_EXTENSIONS = set(['dcm'])
 
 app = Flask(__name__, static_url_path='/static', static_folder='static')
 
@@ -77,8 +77,8 @@ def login():
     return result
 
 
-def allowedFile(filename):
-    return '.' in filename and filename.rsplit('.',1)[1].lower() in ALLOWED_EXTENSIONS
+def allowedFile(fileName):
+    return '.' in fileName and fileName.rsplit('.',1)[1].lower() in ALLOWED_EXTENSIONS
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
@@ -87,37 +87,37 @@ def upload_file():
         result = jsonify({"error":"File not found"})
     file = request.files['file']
     # if user does not select file, browser also
-    # submit an empty part without filename
+    # submit an empty part without fileName
     if file.filename == '':
         result = jsonify({"error":"File doesnt have name"})
     elif (allowedFile(file.filename)==False):
         result = jsonify({"error":"File extension is not permitted"})
     elif file and allowedFile(file.filename):
-        filename = secure_filename(file.filename)
-        file.save(os.path.join(RAW_DATA_FOLDER, filename))
-        filename = extract(filename, RAW_DATA_FOLDER)
-        result = jsonify({"error":"","filename":filename})
+        fileName = secure_filename(file.filename)
+        file.save(os.path.join(RAW_DATA_FOLDER, fileName))
+        fileName, patientID = extract(fileName, RAW_DATA_FOLDER)
+        result = jsonify({"error":"","fileName":fileName, "patientID":patientID})
     return result
 
-@app.route('/extract-mask/<annotData>', methods=['GET'])
-def create_mask(annotData):
-    data =  json.loads(annotData)
-    filename = createMask(data['p0']['x'], data['p0']['y'], 
+@app.route('/extract-mask', methods=['POST'])
+def create_mask():
+    data =  request.get_json()
+    print(data)
+    fileName, patientID = createMask(data['p0']['x'], data['p0']['y'], 
                             data['p1']['x'], data['p1']['y'], 
-                            data['fileName'], RAW_DATA_FOLDER)
-    return (filename)
-
-@app.route('/classify/<fileName>', methods=['GET'])
-def classify(fileName):
-    coba = fileName
-    fileName = fileName+'.mat'
-    print(fileName)
-    classifier = Classifier(fileName, RAW_DATA_FOLDER, MASK_DATA_FOLDER)
-    prediction = classifier.classify()
-    print(prediction)
-    result = jsonify({'fileName': fileName.rsplit('.',1)[0], 'prediction': prediction})
+                            data['fileName'], data['patientID'], RAW_DATA_FOLDER)
+    result = jsonify({"fileName":fileName, "patientID":patientID})
     return result
 
+@app.route('/classify', methods=['POST'])
+def classify():
+    fileData = request.get_json()
+    print(fileData)
+    classifier = Classifier(fileData, RAW_DATA_FOLDER, MASK_DATA_FOLDER)
+    prediction, patientID, fileName = classifier.classify()
+    result = jsonify({'prediction': prediction, 'patientID': patientID, 'fileName': fileName})
+    print(prediction)
+    return result
 	
 if __name__ == '__main__':
     app.run(debug=True)

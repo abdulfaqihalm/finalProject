@@ -10,7 +10,8 @@ class Annotator extends Component {
         y: 0
       };
       this.arr = [];
-      this.img = 'http://localhost:3000/static/rawImage/' + this.props.location.state;
+      this.img = 'http://localhost:3000/static/rawImage/' + this.props.location.state.fileName.split('.',1)[0] + '.png';
+      this.patientID = this.props.location.state.patientID;
 
       this._onMouseClick = this._onMouseClick.bind(this);
       this._onMouseMove = this._onMouseMove.bind(this);
@@ -66,18 +67,18 @@ class Annotator extends Component {
 
     _onSubmit() {
       const annotData = {
-        fileName: this.props.location.state.split(".", 1) + '.mat',
+        fileName: this.props.location.state.fileName,
+        patientID: this.patientID,
         p0: this.arr[0],
         p1: this.arr[1]
       }
       
-      const data = JSON.stringify(annotData)
-
-      createMask(data).then(response =>{
+      //const data = JSON.stringify(annotData)
+      createMask(annotData).then(response =>{
         console.log("File that has been segemented : " + response);
         classify(response).then(response => {
           console.log(response)
-          this.props.history.push({pathname: "/brain/result", state:response});
+          this.props.history.push({pathname: "/brain/result/"+response.patientID, state:response});
         })
         
       });
@@ -87,6 +88,7 @@ class Annotator extends Component {
       const { x, y } = this.state;
       return <div ref="elem" className="container">
         <div>
+          <h2>patientID : {this.patientID}</h2>
           <canvas alt="ini gambar" id="canvasBackground" width="512" height="512" 
             style={{position: 'absolute', zIndex:0}}>
           </canvas>

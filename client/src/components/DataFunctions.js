@@ -24,7 +24,7 @@ export const upload = file => {
 
 export const createMask = annotData => {
     return axios
-        .get('/extract-mask/' + annotData)
+        .post('/extract-mask', annotData)
         .then(response => {
             return response.data
         })
@@ -43,9 +43,9 @@ export const createMask = annotData => {
         })
 }
 
-export const classify = fileName => {
+export const classify = fileData => {
     return axios
-        .get('/classify/' + fileName)
+        .post('/classify', fileData)
         .then(response => {
             console.log('Classifier result : ' + response.data);
             return response.data

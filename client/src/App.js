@@ -21,9 +21,9 @@ class App extends Component {
             <Route exact path="/register" component={Register} />
             <Route exact path="/login" component={Login} />
             <Route exact path="/profile" component={Profile} />
-            <Route exact path="/brain/annotator" component={Annotator}/>
+            <Route exact path="/brain/annotator/:patientID" component={Annotator}/>
             <Route exact path="/brain/upload" component={Upload}/>
-            <Route exact path="/brain/result" component={Result}/>
+            <Route exact path="/brain/result/:patientID" component={Result}/>
           </div>
         </div>
       </Router>
