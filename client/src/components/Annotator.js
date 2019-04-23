@@ -88,18 +88,18 @@ class Annotator extends Component {
       const { x, y } = this.state;
       return <div ref="elem" className="container">
         <div>
-          <h2>patientID : {this.patientID}</h2>
           <canvas alt="ini gambar" id="canvasBackground" width="512" height="512" 
-            style={{position: 'absolute', zIndex:0}}>
+            style={{position: 'absolute', zIndex:0, top:120, left:500}}>
           </canvas>
           <canvas onMouseMove={this._onMouseMove} onClick={this._onMouseClick} 
-            id="canvasSketch" width="512" height="512" style={{position: 'absolute', zIndex:1}} >
+            id="canvasSketch" width="512" height="512" style={{position: 'absolute', zIndex:1, top:120}} >
           </canvas>
         </div>
         <div>
-        <h1 style={{position: 'relative', top: 520}}>Mouse coordinates: { x } { y }</h1>
-        <button style={{position: 'relative', top: 520}} onClick={this._resetCounter}>Reset</button>
-        <button style={{position: 'relative', top: 530}} onClick={this._onSubmit}>Submit Points</button>
+        <h3 style={{position: 'absolute', top: 150, left:1100}}>patientID : {this.patientID}</h3>
+        <h4 style={{position: 'absolute', top: 180, left:1100}}>Mouse coordinates: { x } { y }</h4>
+        <button type="button" class="btn btn-lg btn-primary" style={{position: 'absolute', top: 225, left:1100}} onClick={this._resetCounter}>Reset</button>
+        <button type="button" class="btn btn-lg btn-primary" style={{position: 'absolute', top: 280, left:1100}} onClick={this._onSubmit}>Submit Points</button>
         </div>
       </div>;
     }

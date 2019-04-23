@@ -15,6 +15,15 @@ class Result extends Component {
         this._pdfGenerator = this._pdfGenerator.bind(this);
     }
 
+    componentDidMount() {
+        const token = localStorage.userToken
+        const decoded = jwt_decode(token)
+        this.setState({
+          first_name: decoded.identity.first_name,
+          last_name: decoded.identity.last_name,
+        })
+    }
+
     _pdfGenerator() {
         let doc = new jsPDF();
         const img = new Image();
@@ -32,18 +41,18 @@ class Result extends Component {
         doc.text('Patient Id : ' + this.patientID, 115, 85);
         doc.text('Prediction : ' + this.prediction, 115, 95);
         doc.text('Scanning Date : ' + date.getDate() + '-' + month  + '-' + date.getFullYear(), 185, 200, {align:'right'});
-        doc.text('Modality : MRI', 97, 200, {align:'center'}); 
-        doc.text( 'Radiologist : TA', 25, 200);
+        doc.text('Modality : MRI', 105, 200, {align:'center'}); 
+        doc.text( 'Radiologist : ' + this.state.first_name + ' ' + this.state.last_name, 25, 200);
         doc.save('Report' + this.patientID + '.pdf');
     }
     
     render(){
         return(
             <div>
-                <p>Patient ID : {this.patientID}</p>
-                <p>Prediction Class : {this.prediction}</p>
-                <img width="512" height="512" src={this.img} />
-                <button onClick={this._pdfGenerator} >Download Report</button>
+                <h3 style={{position: 'absolute', top: 150, left:1100}}>Patient ID : {this.patientID}</h3>
+                <h4 style={{position: 'absolute', top: 180, left:1100}}>Prediction Class : {this.prediction}</h4>
+                <img style={{position: 'absolute', zIndex:0, top:120, left:500}} width="512" height="512" src={this.img} />
+                <button type="button" class="btn btn-lg btn-primary" style={{position: 'absolute', top: 225, left:1100}} onClick={this._pdfGenerator} >Download Report</button>
             </div>
         )
     }

@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { BrowserRouter as Router, Route } from 'react-router-dom'
+import { BrowserRouter as Router, Route, Redirect } from 'react-router-dom'
 
 import Navbar from './components/Navbar'
 import Landing from './components/Landing'
@@ -16,19 +16,30 @@ class App extends Component {
       <Router>
         <div className="App">
           <Navbar />
-          <Route exact path="/" component={Landing} />
+          <PrivateRoute exact path="/" component={Landing} />
           <div className="container">
-            <Route exact path="/register" component={Register} />
+            <Route  exact path="/register" component={Register} />
             <Route exact path="/login" component={Login} />
-            <Route exact path="/profile" component={Profile} />
-            <Route exact path="/brain/annotator/:patientID" component={Annotator}/>
-            <Route exact path="/brain/upload" component={Upload}/>
-            <Route exact path="/brain/result/:patientID" component={Result}/>
+            <PrivateRoute exact path="/profile" component={Profile} />
+            <PrivateRoute exact path="/brain/annotator/:patientID" component={Annotator}/>
+            <PrivateRoute exact path="/brain/upload" component={Upload}/>
+            <PrivateRoute exact path="/brain/result/:patientID" component={Result}/>
           </div>
         </div>
       </Router>
     )
   }
 }
+
+const PrivateRoute = ({ component: Component, ...rest }) => (
+  <Route {...rest} render={(props) => (
+    (localStorage.userToken)
+      ? <Component {...props} />
+      : <Redirect to={{
+          pathname: '/login',
+          state: { from: props.location }
+        }} />
+  )} />
+)
 
 export default App

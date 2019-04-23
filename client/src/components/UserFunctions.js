@@ -1,5 +1,6 @@
 import axios from 'axios'
 
+
 export const register = newUser => {
   return axios
     .post('/register', {
@@ -20,7 +21,7 @@ export const login = user => {
       password: user.password
     })
     .then(response => {
-      localStorage.setItem('usertoken', response.data)
+      localStorage.setItem('userToken', response.data)
       console.log(user.email);
       return response.data
     })
