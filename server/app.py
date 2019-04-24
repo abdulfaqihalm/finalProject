@@ -10,6 +10,7 @@ from extractMask import createMask
 from classifier import Classifier
 import os 
 from werkzeug.utils import secure_filename
+import time
 
 
 RAW_DATA_FOLDER = '/home/faqih/ITB/TA/Web/server/static/rawData'
@@ -102,21 +103,21 @@ def upload_file():
 @app.route('/extract-mask', methods=['POST'])
 def create_mask():
     data =  request.get_json()
-    print(data)
+    start = time.time()
     fileName, patientID = createMask(data['p0']['x'], data['p0']['y'], 
                             data['p1']['x'], data['p1']['y'], 
                             data['fileName'], data['patientID'], RAW_DATA_FOLDER)
-    result = jsonify({"fileName":fileName, "patientID":patientID})
+    result = jsonify({"fileName":fileName, "patientID":patientID, "start":start})
     return result
 
 @app.route('/classify', methods=['POST'])
 def classify():
     fileData = request.get_json()
-    print(fileData)
+    timeToPredict = time.time() - fileData['start']
     classifier = Classifier(fileData, RAW_DATA_FOLDER, MASK_DATA_FOLDER)
     prediction, patientID, fileName = classifier.classify()
-    result = jsonify({'prediction': prediction, 'patientID': patientID, 'fileName': fileName})
-    print(prediction)
+    result = jsonify({'prediction': prediction, 'patientID': patientID, 
+    'fileName': fileName, 'timeToPredict':timeToPredict})
     return result
 	
 if __name__ == '__main__':

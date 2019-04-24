@@ -92,7 +92,7 @@ class Annotator extends Component {
             style={{position: 'absolute', zIndex:0, top:120, left:500}}>
           </canvas>
           <canvas onMouseMove={this._onMouseMove} onClick={this._onMouseClick} 
-            id="canvasSketch" width="512" height="512" style={{position: 'absolute', zIndex:1, top:120}} >
+            id="canvasSketch" width="512" height="512" style={{position: 'absolute', zIndex:1, top:120, left:500}} >
           </canvas>
         </div>
         <div>

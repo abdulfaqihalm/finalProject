@@ -9,6 +9,7 @@ class Result extends Component {
             first_name:'',
             last_name:''
         }
+        this.timeToPredict = this.props.location.state.timeToPredict;
         this.patientID = this.props.location.state.patientID;
         this.prediction = this.props.location.state.prediction;
         this.img = 'http://localhost:3000/static/segmentedImage/' + this.props.location.state.fileName.split('.',1)[0] + '.png';
@@ -51,8 +52,9 @@ class Result extends Component {
             <div>
                 <h3 style={{position: 'absolute', top: 150, left:1100}}>Patient ID : {this.patientID}</h3>
                 <h4 style={{position: 'absolute', top: 180, left:1100}}>Prediction Class : {this.prediction}</h4>
+                <h4 style={{position: 'absolute', top: 210, left:1100}}>Time to predict : {Math.round(this.timeToPredict * 100) / 100} Seconds</h4>
                 <img style={{position: 'absolute', zIndex:0, top:120, left:500}} width="512" height="512" src={this.img} />
-                <button type="button" class="btn btn-lg btn-primary" style={{position: 'absolute', top: 225, left:1100}} onClick={this._pdfGenerator} >Download Report</button>
+                <button type="button" class="btn btn-lg btn-primary" style={{position: 'absolute', top: 255, left:1100}} onClick={this._pdfGenerator} >Download Report</button>
             </div>
         )
     }
