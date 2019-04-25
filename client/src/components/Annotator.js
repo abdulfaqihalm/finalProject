@@ -4,7 +4,7 @@ import { createMask, classify } from './DataFunctions';
 class Annotator extends Component {
     constructor(props) {
       super(props);
-      this.i = 0;
+      this.pointCounter = 0;
       this.state = { 
         x: 0, 
         y: 0
@@ -17,6 +17,7 @@ class Annotator extends Component {
       this._onMouseMove = this._onMouseMove.bind(this);
       this._resetCounter = this._resetCounter.bind(this);
       this._onSubmit = this._onSubmit.bind(this);
+      this._drawCircle = this._drawCircle.bind(this);
     }
 
     componentDidMount() {
@@ -31,11 +32,23 @@ class Annotator extends Component {
     _drawPoint(x, y) {
       const ctx = document.getElementById('canvasSketch').getContext('2d');
       ctx.strokeStyle = ctx.fillStyle = 'red';
-      ctx.lineWidth = 2;
+      ctx.lineWidth = 1;
       ctx.beginPath(); 
       ctx.moveTo(x+4, y);
       ctx.arc(x, y, 4, 0, Math.PI*2, false);
       ctx.fill();
+    }
+
+    _drawCircle(points) {
+      const ctx = document.getElementById('canvasSketch').getContext('2d');
+      ctx.clearRect(0, 0, 512, 512);
+      ctx.strokeStyle = 'red';
+      ctx.lineWidth = 2;
+      let radius = Math.sqrt(Math.pow(points[0].x - points[1].x, 2) + Math.pow(points[0].y - points[1].y, 2))
+      ctx.beginPath();
+      ctx.moveTo(points[0].x + radius, points[0].y);
+      ctx.arc(points[0].x, points[0].y, radius, 0, Math.PI*2, false);
+      ctx.stroke();
     }
     
     _onMouseMove(e) {
@@ -46,23 +59,30 @@ class Annotator extends Component {
     _storeCoordinate(xVal, yVal, arr) {
       arr.push({x: xVal, y: yVal});
     }
-    
-        
+           
     _resetCounter() {
       const ctx = document.getElementById('canvasSketch').getContext('2d');
-      this.i = 0; 
+      this.pointCounter = 0; 
       this.arr = []; 
       ctx.clearRect(0, 0, 512, 512);
-      console.log(this.i);
+      console.log(this.pointCounter);
     }
     
     _onMouseClick(e) {
-      let x = e.nativeEvent.offsetX;
-      let y = e.nativeEvent.offsetY;
-      this._storeCoordinate(x, y, this.arr);
-      this._drawPoint(x, y);
-      console.log(this.arr[this.i].x, this.arr[this.i].y, this.arr.length);
-      this.i++; 
+      if (this.pointCounter>1) {}
+      else {
+        let x = e.nativeEvent.offsetX;
+        let y = e.nativeEvent.offsetY;
+        this._storeCoordinate(x, y, this.arr);
+        this._drawPoint(x, y);
+        console.log(this.arr[this.pointCounter].x, this.arr[this.pointCounter].y, this.pointCounter);
+        this.pointCounter++; 
+        if (this.pointCounter===2){
+          console.log(this.pointCounter)
+          this._drawCircle(this.arr);
+        }
+      }
+
     }
 
     _onSubmit() {
