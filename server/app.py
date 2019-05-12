@@ -115,9 +115,9 @@ def classify():
     fileData = request.get_json()
     timeToPredict = time.time() - fileData['start']
     classifier = Classifier(fileData, RAW_DATA_FOLDER, MASK_DATA_FOLDER)
-    prediction, patientID, fileName = classifier.classify()
+    prediction, patientID, fileName, tumorSize = classifier.classify()
     result = jsonify({'prediction': prediction, 'patientID': patientID, 
-    'fileName': fileName, 'timeToPredict':timeToPredict})
+    'tumorSize':tumorSize, 'fileName': fileName, 'timeToPredict':timeToPredict})
     return result
 	
 if __name__ == '__main__':

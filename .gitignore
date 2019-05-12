@@ -1,0 +1,10 @@
+*.log
+*.dcm
+*.png
+*.npz
+
+trainedModel*
+
+/.vscode
+/server/__pycache__
+/client/node_modules

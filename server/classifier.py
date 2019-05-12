@@ -29,6 +29,7 @@ class Classifier:
         self.priors = (np.load(os.path.join(self.PATH, 'priors.npz')))['priors']
         self.covariances = (np.load(os.path.join(self.PATH, 'covariances.npz')))['covariances']
         self.principalComp = (np.load(os.path.join(self.PATH, 'principalComp.npz')))['principalComp']
+        self.tumorSize = 0
 
     def _norm(self, image):
         minElm = np.amin(image)
@@ -60,6 +61,7 @@ class Classifier:
                 cShifted = c + cDelta[i, j]      
                 feas[n, :] = normImage[rShifted.astype(int), cShifted.astype(int)]
                 n += 1 
+        self.tumorSize = np.around((r.shape[0] * 0.49 * 0.49), decimals=2) 
         return feas
 
     def _featuresExtraction(self):
@@ -91,7 +93,7 @@ class Classifier:
             result = "Glioma"
         elif(prediction==3):
             result = "Pituitary"
-        return result, self.patientID, self.fileName
+        return result, self.patientID, self.fileName, self.tumorSize
 
 if __name__ == '__main__':
     fileData = '1.dcm'
