@@ -42,8 +42,10 @@ Installing mysql server
 Open the other terminal, type:
 
 ```
-
+sudo apt-get update
+sudo apt-get install mysql-server
 ```
+After that, set your own DB Server.
 
 ### Running
 Open the terminal, type : 
@@ -65,6 +67,9 @@ The npm will direct you automatically to the browser.
 
 * [Flask](http://flask.pocoo.org/) - The web backend
 * [React](https://reactjs.org/) - The web frontend
+
+## Further Questions
+If you have any questions, feel free to contact me at abdulfaqihalm@Gmail.com 
 
 ## License
 
