@@ -5,7 +5,7 @@
   "dependencies": {
     "@material-ui/core": "^3.9.3",
     "@turf/turf": "^5.1.6",
-    "axios": "^0.18.0",
+    "axios": "^0.21.1",
     "jspdf": "^1.5.3",
     "jwt-decode": "^2.2.0",
     "react": "^16.8.3",
